@@ -44,7 +44,8 @@ You will need [NumPy](https://www.numpy.org/),
 notebook, install that as well (mandatory at the moment as we only have the
 notebook).
 To save animations of your GAN training, you may want either
-[FFmpeg](https://ffmpeg.org/) or [Pillow](https://python-pillow.org/).
+[FFmpeg](https://ffmpeg.org/) (mp4) or [Pillow](https://python-pillow.org/)
+(gif).
 
 I do not offer installation instructions or a setup file due to the differences
 between CPU and GPU packages. Please look that stuff up yourself in the
