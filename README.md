@@ -71,7 +71,7 @@ Installation instructions for:
 - [Jupyter](https://jupyter.org/install)
 - [Pillow](https://pillow.readthedocs.io/en/stable/installation.html)
 
-## Generating source code
+## Generating source code and running experiments
 
 You can generate source code from the Jupyter notebook. Any parameter will be
 passable as command line arguments, where the default values are the ones
@@ -84,6 +84,20 @@ To generate, simply execute the following:
 ```zsh
     ./src/ipynb_to_py.py
 ```
+
+If you then want to start the experiments, modify and execute
+`src/run_experiments.py`. Edit the `test_params` dictionary in that file and
+enter the following in your command line of choice:
+```zsh
+    ./src/run_experiments.py --debug
+```
+
+That only started a dry run. To start the tests for real, omit the `--debug`
+argument and execute again to see your computer go to work.
+
+A `--distributed` flag is planned that will start each test on a separately
+created cloud machine. That, however, is still a TODO and will only support
+one cloud service provider out of the box.
 
 ## Experimental dataset
 
