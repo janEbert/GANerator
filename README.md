@@ -57,7 +57,7 @@ To save animations of your GAN training, you may want either
 Using [Anaconda](https://www.anaconda.com/), everything except for PyTorch and
 FFmpeg can be installed in one line:
 ```zsh
-    conda install numpy matplotlib jupyter pillow
+conda install numpy matplotlib jupyter pillow
 ```
 
 I do not offer installation instructions or a setup file due to the differences
@@ -82,14 +82,14 @@ code. These are listed in `src/ipynb_to_py.py`.
 
 To generate, simply execute the following:
 ```zsh
-    ./src/ipynb_to_py.py
+./src/ipynb_to_py.py
 ```
 
 If you then want to start the experiments, modify and execute
 `src/run_experiments.py`. Edit the `test_params` dictionary in that file and
 enter the following in your command line of choice:
 ```zsh
-    ./src/run_experiments.py --debug
+./src/run_experiments.py --debug
 ```
 
 That only started a dry run. To start the tests for real, omit the `--debug`
