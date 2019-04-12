@@ -14,12 +14,12 @@ PY_PATH    = 'GANerator_generated.py'
 # `plt.imshow` should be marked with  a '# show' comment at the end of
 # the line.
 # This means any of those function spanning more than one line.
-SHOW_PLOTS = True
+SHOW_PLOTS = False
 
 EMPTY_RE = re.compile(r'^\s*$')
-PLOT_RE  = re.compile(r'^\s*[(plt\.(im)?show\()#\s*show$]')
+PLOT_RE  = re.compile(r'(^\s*plt\.(im)?show\()|(.*#\s*show$)')
 
-FORMAT_RULES = '\n'.join(
+FORMAT_RULES = '\n'.join((
     '- Document *every* parameter.',
     '- Use two spaces before the `#` sign if not at ' \
             'start of line (ignoring indentation).',
@@ -37,7 +37,7 @@ FORMAT_RULES = '\n'.join(
     # TODO fix below using indentation length
     '- Currently, no comments or empty lines in '
             'multi line code are supported.',
-)
+))
 
 
 def filter_nb_only(line):
@@ -97,7 +97,7 @@ def process_parameters(source, src_file):
     comment_re              = re.compile(r'^\s*# (.*)')
     code_with_comment_re    = re.compile(r"^\s*'(\S+?.*?)':\s+(.*),  # (.*)")
     code_without_comment_re = re.compile(r"^\s*'(\S+?.*?)':\s+(.*)")
-    code_without_colon_re  = re.compile(r'^\s*(\S+.*)')
+    code_without_colon_re   = re.compile(r'^\s*(\S+.*)')
 
     comment_buffer = []
     code_buffer    = []
@@ -155,14 +155,22 @@ def process_parameters(source, src_file):
                     FORMAT_RULES
             )))
     finish_src_code(code_buffer, src_file)
-    write_src('params = vars(parser.parse_args())', src_file)
+    write_src(map(lambda line: line + '\n', (
+        'params = vars(parser.parse_args())',
+        'for key, val in params.items():',
+        '    if type(val) is list:',
+        '        if len(val) == 1:',
+        '            params[key] = val[0]',
+        '        else:',
+        '            params[key] = tuple(val)',
+    )), src_file)
 
 
 def main():
     with open(os.path.join(os.path.dirname(__file__), IPYNB_PATH), 'r') as f:
         cells = json.load(f)['cells']
 
-    next_cell_params = False
+    params_processed = False
     with open(os.path.join(os.path.dirname(__file__), PY_PATH), 'w') as src_file:
         src_file.writelines(map(lambda line: line + '\n', (
             '#!/usr/bin/env python3',
@@ -178,12 +186,10 @@ def main():
         for cell in cells[1:-1]:
             src_file.write('\n')
             source = cell['source']
-            # TODO better use metadata for finding parameter cell
-            if len(source) == 1 and source[0] == '# Parameters':
-                next_cell_params = True
-            elif next_cell_params:
+            if (not params_processed
+                    and cell['metadata'].get('GANerator_parameters', False)):
                 process_parameters(source, src_file)
-                next_cell_params = False
+                params_processed = True
                 src_file.write('\n\n')
                 continue
             write_src(source, src_file)

@@ -2,7 +2,8 @@
 
 ### Try out, analyze and generate your generators in PyTorch!
 
-An easily usable, performant and extensible interface for all your GAN needs.
+An easily usable, performant and extensible cross-platform interface for all
+your GAN needs.
 
 Training [Generative Adversarial Networks](https://arxiv.org/abs/1406.2661)
 (GANs) is a tiresome and hard task. This is primarily because GAN training has
@@ -23,6 +24,8 @@ experiments much easier.
 
 ## Current Features
 
+Only late versions of Python 3 are supported.
+
 Supported framework:
 - PyTorch
 
@@ -32,6 +35,7 @@ Other:
 - Experimental setup for testing and saving many different parameters
 - Many [GAN hacks](https://github.com/soumith/ganhacks)
 - Generate Python source code from the notebook
+- Cross platform
 
 This repository offers working multiprocessing on multiple GPUs and CPUs, a
 collection of smart parameters that are documented and easily usable. In the
