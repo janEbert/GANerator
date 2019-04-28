@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
+"""
+Execute all experiments in parallel on a number of cloud machines.
+See `machines.py` for information and configuration.
+"""
 
 import argparse
 import itertools
 import os
 import subprocess
 
-import distribute as distributed
+import distribute_multi as distributed
 
 # Relative path from this file to the source file to run.
 SRC_PATH = 'GANerator_generated.py'
@@ -61,13 +65,10 @@ def dict_combinations(dict_):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--distribute', action='store_true',
-            help='Sequentially execute all experiments on one cloud instance. '
-                 'See `machine.py` for more information and configuration.')
     parser.add_argument('--debug', action='store_true',
             help='Only echo the commands to execute.')
     parser.add_argument('--py_bin', type=str, default='python3',
-            help='Python 3 binary.')
+            help='Python 3 binary. Check in your cloud instance.')
     parser.add_argument('--no_gen', action='store_true',
             help='Do not generate the source code again.')
     return parser.parse_args()
@@ -79,8 +80,7 @@ def generate_src(py_bin):
             check=True)
 
 
-def start_experiments(distribute=False, debug=False, py_bin='python3',
-        no_gen=False):
+def start_experiments(debug=False, py_bin='python3', no_gen=False):
     try:
         subprocess.check_output([py_bin, '--version'])
     except FileNotFoundError:
@@ -94,28 +94,12 @@ def start_experiments(distribute=False, debug=False, py_bin='python3',
     if not no_gen:
         generate_src(py_bin)
 
-    if debug and not distribute:
-        def run_func(x):
-            print(' '.join(x))
-    else:
-        def run_func(x):
-            subprocess.run(x, check=True)
-    if distribute and not debug:
-        # since we are going to start on a cloud machine, we know
-        # whether it is going to have unix paths or not
-        src_file = os.path.dirname(__file__) + '/' + SRC_PATH
-    else:
-        src_file = os.path.join(os.path.dirname(__file__), SRC_PATH)
+    # since we are going to start on a cloud machine, we know whether it
+    # is going to have unix paths or not
+    src_file = os.path.dirname(__file__) + '/' + SRC_PATH
     cmd = [py_bin, src_file]
     combinations = dict_combinations(test_params)
-    if distribute:
-        distributed.run_all_distributed(' '.join(cmd), combinations, debug)
-    else:
-        for i, parameters in enumerate(combinations, 1):
-            if not debug:
-                print("Starting experiment {}/{}: '{}'".format(
-                        i, len(combinations), parameters))
-            run_func(cmd + parameters.split(' '), i)
+    distributed.run_all_distributed(' '.join(cmd), combinations, debug)
     print('Done!')
 
 
