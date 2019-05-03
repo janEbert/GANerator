@@ -14,7 +14,9 @@ STARTUP_SCRIPT_PATH = ('GANerator_GCP_startup.sh',)
 # Change these as needed and correct command strings below for your
 # cloud service provider. This example is for the Google Cloud Platform.
 #
-# If you do not need a variable, simply set it to the empty string.
+# Do not change variable names unless you want to look into
+# `distribute_multi.py`.
+# If you do not need a variable, simply set it to an empty string.
 # To do more editing (in case you need more variables), look into
 # `distribute_multi.py`.
 
@@ -36,10 +38,9 @@ GPU_TYPE = ('nvidia-tesla-v100',) * 4 + ('nvidia-tesla-p100',) * 4
 # Make sure you have enough quota available!
 GPU_COUNT = 1
 # As we will start more than one machine, this is only a prefix.
-# Do not change this name.
 INSTANCE_NAME_PREFIX = 'ganerator'
-DISK_NAME = 'ganerator-ssd'  # must contain the dataset you want to use
-# service account you want to use
+DISK_NAME = 'ganerator-ssd'  # Must contain the dataset you want to use.
+# Service account you want to use.
 SERVICE_ACCOUNT = 'ganerator-service-account@ganerator.iam.gserviceaccount.com'
 
 # All the following commands must be a string and will be split at
@@ -73,7 +74,8 @@ START_COMMAND = (
         '--accelerator="type={gpu_type},count={gpu_count}" '
         '--metadata="install-nvidia-driver=True" '
         '--metadata-from-file startup-script="GANERATOR_STARTUP" '
-        '--disk="name={disk_name}" '
+        '--create-disk="size=5GB,auto-delete=yes" '
+        '--disk="name={disk_name},mode=ro" '
         '--service-account={service_account} '
         '--preemptible'
 )

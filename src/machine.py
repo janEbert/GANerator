@@ -21,9 +21,11 @@ GPU_TYPE = 'nvidia-tesla-v100'  # -p4, -v100, -p100 or -k80
 # Make sure you have enough quota available!
 GPU_COUNT = 1
 # As we will start more than one machine, this is only a prefix.
-# Do not change this name.
+# Do not change this variable's name.
 INSTANCE_NAME_PREFIX = 'ganerator'
-DISK_NAME = 'ganerator-hdd'  # must contain the dataset you want to use
+DISK_NAME = 'ganerator-ssd'  # Must contain the dataset you want to use.
+# Service account you want to use.
+SERVICE_ACCOUNT = 'ganerator-service-account@ganerator.iam.gserviceaccount.com'
 
 # All the following commands must be a string and will be split at
 # spaces (`' '`).
@@ -45,10 +47,13 @@ START_COMMAND = (
         '--accelerator="type={gpu_type},count={gpu_count}" '
         '--metadata="install-nvidia-driver=True" '
         '--metadata-from-file startup-script="GANERATOR_STARTUP" '
-        '--disk="name={disk_name}" '
+        '--create-disk="size=5GB,auto-delete=yes" '
+        '--disk="name={disk_name},mode=ro" '
+        '--service-account={service_account} '
         '--preemptible'.format(instance_name_prefix=INSTANCE_NAME_PREFIX,
             zone=ZONE, machine_type=MACHINE_TYPE, image_family=IMAGE_FAMILY,
-            gpu_type=GPU_TYPE, gpu_count=GPU_COUNT, disk_name=DISK_NAME)
+            gpu_type=GPU_TYPE, gpu_count=GPU_COUNT, disk_name=DISK_NAME,
+            service_account=SERVICE_ACCOUNT)
 )
 
 # You must leave two format strings here. One for the command that will
@@ -68,6 +73,16 @@ REMOTE_PROCESS_COMMAND = (
 # If empty or None, this is skipped.
 INIT_COMMAND = (
     ''
+)
+
+# This command will be interpolated in the REMOTE_PROCESS_COMMAND to do
+# some final work in your machine such as saving your experimental
+# results.
+# If empty or None, this is skipped.
+# You can also interpolate the instance name suffix into the command
+# via the format string indicator `{suffix}`.
+FINISH_COMMAND = (
+    'gsutil cp -r ../GANerator_experiments gs://ganerator-data/instance-{suffix}/'
 )
 
 # How to end or delete your instance.
