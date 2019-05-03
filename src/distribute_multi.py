@@ -114,15 +114,20 @@ def start_cloud_init(num, debug):
 
         remote_process_command = remote_process_command.format(
                 instance_name_prefix=instance_name_prefix, suffix=num)
-        command = remote_process_command.split(' ')
-        list_format(command, 'GANERATOR_CLOUD_BIN', cloud_api_path)
-        list_format(command, 'GANERATOR_COMMAND', init_command,
-                reverse_search=True)
+
+        command = remote_process_command.replace('GANERATOR_CLOUD_BIN',
+                '"' + cloud_api_path + '"')
+        command = command.replace('GANERATOR_COMMAND', init_command)
+        # Previous code without shell mode in case it's needed again.
+        # command = remote_process_command.split(' ')
+        # list_format(command, 'GANERATOR_CLOUD_BIN', cloud_api_path)
+        # list_format(command, 'GANERATOR_COMMAND', init_command,
+        #         reverse_search=True)
         if debug:
             time.sleep(1)
-            print(' '.join(command))
+            print(command)
         else:
-            subprocess.run(command, check=True)
+            subprocess.run(command, check=True, shell=True)
 
 
 def start_cloud_process(command, num, debug):
@@ -154,15 +159,19 @@ def start_cloud_finish(num, debug):
 
         remote_process_command = remote_process_command.format(
                 instance_name_prefix=instance_name_prefix, suffix=num)
-        command = remote_process_command.split(' ')
-        list_format(command, 'GANERATOR_CLOUD_BIN', cloud_api_path)
-        list_format(command, 'GANERATOR_COMMAND', finish_command,
-                reverse_search=True)
+
+        command = remote_process_command.replace('GANERATOR_CLOUD_BIN',
+                '"' + cloud_api_path + '"')
+        command = command.replace('GANERATOR_COMMAND', finish_command)
+        # command = remote_process_command.split(' ')
+        # list_format(command, 'GANERATOR_CLOUD_BIN', cloud_api_path)
+        # list_format(command, 'GANERATOR_COMMAND', finish_command,
+        #         reverse_search=True)
         if debug:
             time.sleep(1)
-            print(' '.join(command))
+            print(command)
         else:
-            subprocess.run(command, check=True)
+            subprocess.run(command, check=True, shell=True)
 
 
 def stop_cloud_instance(num, debug):

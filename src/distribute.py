@@ -36,7 +36,7 @@ def start_cloud_init(num, debug):
             time.sleep(1)
             print(command)
         else:
-            subprocess.run(command.split(' '), check=True)
+            subprocess.run(command, check=True, shell=True)
 
 
 def start_cloud_process(command, num, debug):
@@ -57,7 +57,7 @@ def start_cloud_finish(num, debug):
             time.sleep(1)
             print(command)
         else:
-            subprocess.run(command.split(' '), check=True)
+            subprocess.run(command, check=True, shell=True)
 
 
 def stop_cloud_instance(num, debug):

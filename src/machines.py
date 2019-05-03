@@ -93,18 +93,24 @@ REMOTE_PROCESS_COMMAND = (
 )
 
 # This command will be interpolated in the REMOTE_PROCESS_COMMAND to do
-# some final initialization in your machine such as navigating to the
-# GANerator directory.
+# some final initialization in your machine such as cloning and
+# navigating to the GANerator directory. This will be executed as a
+# direct shell command to allow for more freedom, so escape tho correct
+# symbols depending on `REMOTE_PROCESS_COMMAND`.
 # If empty or None, this is skipped.
 # You can also interpolate the instance name suffix into the command
 # via the format string indicator `{suffix}`.
 INIT_COMMAND = (
-    ''
+    'cd /mnt/disks/rwdisk/ && '
+    'git clone https://github.com/janEbert/GANerator.git && '
+    'cd GANerator'
 )
 
 # This command will be interpolated in the REMOTE_PROCESS_COMMAND to do
 # some final work in your machine such as saving your experimental
-# results.
+# results. This will be executed as a direct shell command to allow for
+# more freedom, so escape the correct symbols depending on
+# `REMOTE_PROCESS_COMMAND`.
 # If empty or None, this is skipped.
 # You can also interpolate the instance name suffix into the command
 # via the format string indicator `{suffix}`.
