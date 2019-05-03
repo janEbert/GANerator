@@ -5,7 +5,7 @@
 # below is INSTANCE_NAME_PREFIX which is used to echo which experiment
 # belongs to which machine.
 
-IMAGE_FAMILY = 'pytorch-latest-cu92'  # -cu92, maybe -gpu
+IMAGE_FAMILY = 'pytorch-latest-cu100'  # -cu100, maybe -gpu
 # Use 'europe-west4-c' for P4, -a for TPUs.
 # V100 is available in both.
 #
