@@ -26,6 +26,8 @@ def start_cloud_instance(num, debug):
                 break
 
         subprocess.run(command, check=True)
+        # Wait and hope that formatting has finished by then.
+        time.sleep(180)
 
 
 def start_cloud_init(num, debug):

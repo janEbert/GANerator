@@ -39,7 +39,8 @@ GPU_TYPE = ('nvidia-tesla-v100',) * 4 + ('nvidia-tesla-p100',) * 4
 GPU_COUNT = 1
 # As we will start more than one machine, this is only a prefix.
 INSTANCE_NAME_PREFIX = 'ganerator'
-DISK_NAME = 'ganerator-ssd'  # Must contain the dataset you want to use.
+# Must contain the dataset you want to use.
+RO_DISK_NAME = 'ganerator-ssd'
 # Service account you want to use.
 SERVICE_ACCOUNT = 'ganerator-service-account@ganerator.iam.gserviceaccount.com'
 
@@ -60,7 +61,7 @@ SERVICE_ACCOUNT = 'ganerator-service-account@ganerator.iam.gserviceaccount.com'
 # The following arguments will be interpolated into the same lower-case
 # keyword format string indicator:
 # INSTANCE_NAME_PREFIX, ZONE, MACHINE_TYPE, IMAGE_FAMILY, GPU_TYPE,
-# GPU_COUNT, DISK_NAME, SERVICE_ACCOUNT
+# GPU_COUNT, RO_DISK_NAME, SERVICE_ACCOUNT
 #
 # Also make sure there is _another_ format string indicator `{suffix}`
 # for the instance name suffix after the prefix.
@@ -75,7 +76,7 @@ START_COMMAND = (
         '--metadata="install-nvidia-driver=True" '
         '--metadata-from-file startup-script="GANERATOR_STARTUP" '
         '--create-disk="size=5GB,auto-delete=yes" '
-        '--disk="name={disk_name},mode=ro" '
+        '--disk="name={ro_disk_name},mode=ro" '
         '--service-account={service_account} '
         '--preemptible'
 )
@@ -101,9 +102,11 @@ REMOTE_PROCESS_COMMAND = (
 # You can also interpolate the instance name suffix into the command
 # via the format string indicator `{suffix}`.
 INIT_COMMAND = (
-    'cd /mnt/disks/rwdisk/ && '
+    'cd /mnt/disks/rwdisk && '
+    'mkdir GANerator_experiments && '
     'git clone https://github.com/janEbert/GANerator.git && '
-    'cd GANerator'
+    'cd GANerator && '
+    'echo "cd $PWD" > .bashrc'
 )
 
 # This command will be interpolated in the REMOTE_PROCESS_COMMAND to do
@@ -123,6 +126,6 @@ FINISH_COMMAND = (
 # for the `INSTANCE_NAME_PREFIX` and the corresponding suffix that will
 # both be interpolated later.
 END_COMMAND = (
-    'gcloud compute instances delete {instance_name_prefix}-{suffix}'
+    'gcloud compute instances delete {instance_name_prefix}-{suffix} -q'
 )
 

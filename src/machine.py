@@ -23,7 +23,8 @@ GPU_COUNT = 1
 # As we will start more than one machine, this is only a prefix.
 # Do not change this variable's name.
 INSTANCE_NAME_PREFIX = 'ganerator'
-DISK_NAME = 'ganerator-ssd'  # Must contain the dataset you want to use.
+# Must contain the dataset you want to use.
+RO_DISK_NAME = 'ganerator-ssd'
 # Service account you want to use.
 SERVICE_ACCOUNT = 'ganerator-service-account@ganerator.iam.gserviceaccount.com'
 
@@ -48,11 +49,11 @@ START_COMMAND = (
         '--metadata="install-nvidia-driver=True" '
         '--metadata-from-file startup-script="GANERATOR_STARTUP" '
         '--create-disk="size=5GB,auto-delete=yes" '
-        '--disk="name={disk_name},mode=ro" '
+        '--disk="name={ro_disk_name},mode=ro" '
         '--service-account={service_account} '
         '--preemptible'.format(instance_name_prefix=INSTANCE_NAME_PREFIX,
             zone=ZONE, machine_type=MACHINE_TYPE, image_family=IMAGE_FAMILY,
-            gpu_type=GPU_TYPE, gpu_count=GPU_COUNT, disk_name=DISK_NAME,
+            gpu_type=GPU_TYPE, gpu_count=GPU_COUNT, ro_disk_name=RO_DISK_NAME,
             service_account=SERVICE_ACCOUNT)
 )
 
@@ -76,9 +77,11 @@ REMOTE_PROCESS_COMMAND = (
 # You can also interpolate the instance name suffix into the command
 # via the format string indicator `{suffix}`.
 INIT_COMMAND = (
-    'cd /mnt/disks/rwdisk/ && '
+    'cd /mnt/disks/rwdisk && '
+    'mkdir GANerator_experiments && '
     'git clone https://github.com/janEbert/GANerator.git && '
-    'cd GANerator'
+    'cd GANerator && '
+    'echo "cd $PWD" > .bashrc'
 )
 
 # This command will be interpolated in the REMOTE_PROCESS_COMMAND to do
@@ -95,7 +98,7 @@ FINISH_COMMAND = (
 
 # How to end or delete your instance.
 END_COMMAND = (
-    'gcloud compute instances delete {instance_name_prefix}-{{}}'.format(
+    'gcloud compute instances delete {instance_name_prefix}-{{}} -q'.format(
         instance_name_prefix=INSTANCE_NAME_PREFIX)
 )
 

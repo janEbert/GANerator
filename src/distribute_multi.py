@@ -36,7 +36,7 @@ MACHINE_VARS = process_machine_vars({
         'gpu_type':               machines.GPU_TYPE,
         'gpu_count':              machines.GPU_COUNT,
         'instance_name_prefix':   machines.INSTANCE_NAME_PREFIX,
-        'disk_name':              machines.DISK_NAME,
+        'ro_disk_name':           machines.RO_DISK_NAME,
         'service_account':        machines.SERVICE_ACCOUNT,
 
         'start_command':          machines.START_COMMAND,
@@ -76,7 +76,7 @@ def start_cloud_instance(num, debug):
     gpu_type             = MACHINE_VARS['gpu_type'][num]
     gpu_count            = MACHINE_VARS['gpu_count'][num]
     instance_name_prefix = MACHINE_VARS['instance_name_prefix'][num]
-    disk_name            = MACHINE_VARS['disk_name'][num]
+    ro_disk_name         = MACHINE_VARS['ro_disk_name'][num]
     service_account      = MACHINE_VARS['service_account'][num]
 
     cloud_api_path       = MACHINE_VARS['cloud_api_path'][num]
@@ -89,7 +89,7 @@ def start_cloud_instance(num, debug):
         image_family=image_family,
         gpu_type=gpu_type,
         gpu_count=gpu_count,
-        disk_name=disk_name,
+        ro_disk_name=ro_disk_name,
         service_account=service_account,
         suffix=num
     )
@@ -101,6 +101,8 @@ def start_cloud_instance(num, debug):
         print(' '.join(command))
     else:
         subprocess.run(command, check=True)
+        # Wait and hope that formatting has finished by then.
+        time.sleep(180)
 
 
 def start_cloud_init(num, debug):
