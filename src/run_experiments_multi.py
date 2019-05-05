@@ -40,6 +40,7 @@ def self_cross_product(it, length=2):
 test_params = {
     'append_time': (True,),
     'save_dir': ('../GANerator_experiments',),
+    'save_params': (True,),
     'dataset_root': ('/mnt/disks/ganerator-disk/ffhq',),
     'img_shape': (64, 128),
     'normalization': self_cross_product(('b', 's', 'n', 'v', 'i', 'a')),
