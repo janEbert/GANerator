@@ -106,7 +106,7 @@ INIT_COMMAND = (
     'mkdir GANerator_experiments && '
     'git clone https://github.com/janEbert/GANerator.git && '
     'cd GANerator && '
-    'echo "cd $PWD" > .bashrc'
+    'echo \\"cd $PWD\\" > .bashrc'
 )
 
 # This command will be interpolated in the REMOTE_PROCESS_COMMAND to do

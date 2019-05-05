@@ -36,7 +36,7 @@ def self_cross_product(it, length=2):
 test_params = {
     'append_time': (True,),
     'save_dir': ('../GANerator_experiments',),
-    'dataset_root': ('/mnt/disks/ganerator-disk/ffhq'),
+    'dataset_root': ('/mnt/disks/ganerator-disk/ffhq',),
     'img_shape': (64, 128),
     'normalization': self_cross_product(('b', 's', 'n', 'v', 'i', 'a')),
 }
@@ -115,7 +115,7 @@ def start_experiments(distribute=False, debug=False, py_bin='python3',
             if not debug:
                 print("Starting experiment {}/{}: '{}'".format(
                         i, len(combinations), parameters))
-            run_func(cmd + parameters.split(' '), i)
+            run_func(cmd + parameters.split(' '))
     print('Done!')
 
 
