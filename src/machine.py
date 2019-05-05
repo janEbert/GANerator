@@ -81,7 +81,7 @@ INIT_COMMAND = (
     'mkdir GANerator_experiments && '
     'git clone https://github.com/janEbert/GANerator.git && '
     'cd GANerator && '
-    'echo \\"cd $PWD\\" > .bashrc'
+    'echo \\"cd \\$PWD\\" > .bashrc'
 )
 
 # This command will be interpolated in the REMOTE_PROCESS_COMMAND to do
@@ -93,7 +93,9 @@ INIT_COMMAND = (
 # You can also interpolate the instance name suffix into the command
 # via the format string indicator `{suffix}`.
 FINISH_COMMAND = (
-    'gsutil cp -r ../GANerator_experiments gs://ganerator-data/instance-{suffix}/'
+    'export ANAME=\\$(date +%s) && '
+    'tar -czf models-\\$ANAME ../GANerator_experiments && '
+    'gsutil cp models-\\$ANAME gs://ganerator-data/instance-{suffix}/'
 )
 
 # How to end or delete your instance.
