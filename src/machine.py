@@ -51,6 +51,7 @@ START_COMMAND = (
         '--create-disk="size=5GB,auto-delete=yes" '
         '--disk="name={ro_disk_name},mode=ro" '
         '--service-account={service_account} '
+        '--scopes=storage-rw '
         '--preemptible'.format(instance_name_prefix=INSTANCE_NAME_PREFIX,
             zone=ZONE, machine_type=MACHINE_TYPE, image_family=IMAGE_FAMILY,
             gpu_type=GPU_TYPE, gpu_count=GPU_COUNT, ro_disk_name=RO_DISK_NAME,

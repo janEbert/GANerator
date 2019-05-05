@@ -78,6 +78,7 @@ START_COMMAND = (
         '--create-disk="size=5GB,auto-delete=yes" '
         '--disk="name={ro_disk_name},mode=ro" '
         '--service-account={service_account} '
+        '--scopes=storage-rw '
         '--preemptible'
 )
 
