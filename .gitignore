@@ -1,3 +1,4 @@
 *.pyc
 src/GANerator_generated.py
+notebooks/.ipynb_checkpoints/
 
