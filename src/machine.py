@@ -79,9 +79,10 @@ REMOTE_PROCESS_COMMAND = (
 INIT_COMMAND = (
     'cd /mnt/disks/rwdisk && '
     'mkdir GANerator_experiments && '
-    'git clone https://github.com/janEbert/GANerator.git && '
+    'git clone -q https://github.com/janEbert/GANerator.git && '
     'cd GANerator && '
-    'echo \\"cd \\$PWD\\" > .bashrc'
+    'python3 src/ipynb_to_py.py && '
+    'echo \\"cd \\$PWD\\" >> ~/.bashrc'
 )
 
 # This command will be interpolated in the REMOTE_PROCESS_COMMAND to do
