@@ -16,7 +16,7 @@ ZONE = 'europe-west4-c'
 # 'n1-standard-2' or maybe -4
 # or 'n1-highmem-4' or -8.
 MACHINE_TYPE = 'n1-standard-4'
-GPU_TYPE = 'nvidia-tesla-v100'  # -p4, -v100, -p100 or -k80
+GPU_TYPE = 'nvidia-tesla-p4'  # -p4, -v100, -p100 or -k80
 # 1, 2, 4, 8.
 # Make sure you have enough quota available!
 GPU_COUNT = 1
@@ -51,7 +51,7 @@ START_COMMAND = (
         '--create-disk="size=5GB,auto-delete=yes" '
         '--disk="name={ro_disk_name},mode=ro" '
         '--service-account={service_account} '
-        '--scopes=storage-rw '
+        '--scopes=storage-full '
         '--preemptible'.format(instance_name_prefix=INSTANCE_NAME_PREFIX,
             zone=ZONE, machine_type=MACHINE_TYPE, image_family=IMAGE_FAMILY,
             gpu_type=GPU_TYPE, gpu_count=GPU_COUNT, ro_disk_name=RO_DISK_NAME,
@@ -83,7 +83,8 @@ INIT_COMMAND = (
     'git clone -q https://github.com/janEbert/GANerator.git && '
     'cd GANerator && '
     'python3 src/ipynb_to_py.py && '
-    'echo \\"cd \\$PWD\\" >> ~/.bashrc'
+    'echo \\"cd \\$PWD\\" > ~/.bashrc && '
+    'conda init > /dev/null'
 )
 
 # This command will be interpolated in the REMOTE_PROCESS_COMMAND to do
@@ -96,8 +97,8 @@ INIT_COMMAND = (
 # via the format string indicator `{suffix}`.
 FINISH_COMMAND = (
     'export ANAME=\\$(date +%s) && '
-    'tar -czf models-\\$ANAME ../GANerator_experiments && '
-    'gsutil cp models-\\$ANAME gs://ganerator-data/instance-{suffix}/'
+    'tar -czf exp-\\$ANAME.tar -C .. GANerator_experiments && '
+    'gsutil cp exp-\\$ANAME.tar gs://jan-ml-data/instance-{suffix}/'
 )
 
 # How to end or delete your instance.

@@ -78,7 +78,7 @@ START_COMMAND = (
         '--create-disk="size=5GB,auto-delete=yes" '
         '--disk="name={ro_disk_name},mode=ro" '
         '--service-account={service_account} '
-        '--scopes=storage-rw '
+        '--scopes=storage-full '
         '--preemptible'
 )
 
@@ -97,7 +97,7 @@ REMOTE_PROCESS_COMMAND = (
 # This command will be interpolated in the REMOTE_PROCESS_COMMAND to do
 # some final initialization in your machine such as cloning and
 # navigating to the GANerator directory. This will be executed as a
-# direct shell command to allow for more freedom, so escape tho correct
+# direct shell command to allow for more freedom, so escape the correct
 # symbols depending on `REMOTE_PROCESS_COMMAND`.
 # If empty or None, this is skipped.
 # You can also interpolate the instance name suffix into the command
@@ -108,7 +108,8 @@ INIT_COMMAND = (
     'git clone -q https://github.com/janEbert/GANerator.git && '
     'cd GANerator && '
     'python3 src/ipynb_to_py.py && '
-    'echo \\"cd \\$PWD\\" >> ~/.bashrc'
+    'echo \\"cd \\$PWD\\" > ~/.bashrc && '
+    'conda init > /dev/null'
 )
 
 # This command will be interpolated in the REMOTE_PROCESS_COMMAND to do
@@ -121,8 +122,8 @@ INIT_COMMAND = (
 # via the format string indicator `{suffix}`.
 FINISH_COMMAND = (
     'export ANAME=\\$(date +%s) && '
-    'tar -czf models-\\$ANAME ../GANerator_experiments && '
-    'gsutil cp models-\\$ANAME gs://ganerator-data/instance-{suffix}/'
+    'tar -czf exp-\\$ANAME.tar -C .. GANerator_experiments && '
+    'gsutil cp exp-\\$ANAME.tar gs://jan-ml-data/instance-{suffix}/'
 )
 
 # How to end or delete your instance.
