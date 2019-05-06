@@ -93,14 +93,13 @@ def start_cloud_instance(num, debug):
         service_account=service_account,
         suffix=num
     )
-    command = command.split(' ')
-    list_format(command, 'GANERATOR_CLOUD_BIN', cloud_api_path)
-    list_format(command, 'GANERATOR_STARTUP', startup_script_path,
-            reverse_search=True)
+    command = command.replace('GANERATOR_CLOUD_BIN',
+            '"' + cloud_api_path + '"')
+    command = command.replace('GANERATOR_STARTUP', startup_script_path)
     if debug:
-        print(' '.join(command))
+        print(command)
     else:
-        subprocess.run(command, check=True)
+        subprocess.run(command, check=True, shell=True)
         # Wait and hope that formatting has finished by then.
         time.sleep(180)
 
@@ -120,11 +119,6 @@ def start_cloud_init(num, debug):
         command = remote_process_command.replace('GANERATOR_CLOUD_BIN',
                 '"' + cloud_api_path + '"')
         command = command.replace('GANERATOR_COMMAND', init_command)
-        # Previous code without shell mode in case it's needed again.
-        # command = remote_process_command.split(' ')
-        # list_format(command, 'GANERATOR_CLOUD_BIN', cloud_api_path)
-        # list_format(command, 'GANERATOR_COMMAND', init_command,
-        #         reverse_search=True)
         if debug:
             time.sleep(1)
             print(command)
@@ -139,15 +133,14 @@ def start_cloud_process(command, num, debug):
 
     remote_process_command = remote_process_command.format(
             instance_name_prefix=instance_name_prefix, suffix=num)
-    remote_process_command = remote_process_command.split(' ')
-    list_format(remote_process_command, 'GANERATOR_CLOUD_BIN', cloud_api_path)
-    list_format(remote_process_command, 'GANERATOR_COMMAND', command,
-            reverse_search=True)
+    command = remote_process_command.replace('GANERATOR_CLOUD_BIN',
+            '"' + cloud_api_path + '"')
+    command = command.replace('GANERATOR_COMMAND', command)
     if debug:
         time.sleep(1)
-        print(' '.join(remote_process_command))
+        print(remote_process_command)
     else:
-        subprocess.run(remote_process_command, check=True)
+        subprocess.run(remote_process_command, check=True, shell=True)
 
 
 def start_cloud_finish(num, debug):
@@ -165,10 +158,6 @@ def start_cloud_finish(num, debug):
         command = remote_process_command.replace('GANERATOR_CLOUD_BIN',
                 '"' + cloud_api_path + '"')
         command = command.replace('GANERATOR_COMMAND', finish_command)
-        # command = remote_process_command.split(' ')
-        # list_format(command, 'GANERATOR_CLOUD_BIN', cloud_api_path)
-        # list_format(command, 'GANERATOR_COMMAND', finish_command,
-        #         reverse_search=True)
         if debug:
             time.sleep(1)
             print(command)
@@ -181,13 +170,14 @@ def stop_cloud_instance(num, debug):
     cloud_api_path = MACHINE_VARS['cloud_api_path'][num]
     command = MACHINE_VARS['end_command'][num].format(
             instance_name_prefix=instance_name_prefix, suffix=num)
-    list_format(command, 'GANERATOR_CLOUD_BIN', cloud_api_path)
+    command = remote_process_command.replace('GANERATOR_CLOUD_BIN',
+            '"' + cloud_api_path + '"')
     if debug:
         time.sleep(1)
         print(command)
         time.sleep(1)
     else:
-        subprocess.run(command.split(' '), check=True)
+        subprocess.run(command, check=True, shell=True)
 
 
 def start_experiment(command, num, debug):

@@ -14,18 +14,11 @@ STARTUP_SCRIPT_PATH = os.path.join(os.path.dirname(__file__),
 
 def start_cloud_instance(num, debug):
     command = machine.START_COMMAND.format(num)
+    command = command.replace('GANERATOR_STARTUP', STARTUP_SCRIPT_PATH)
     if debug:
         print(command)
     else:
-        command = command.split(' ')
-        for i in range(len(command) - 1, -1, -1):
-            part = command[i]
-            if 'GANERATOR_STARTUP' in part:
-                part.replace('GANERATOR_STARTUP', STARTUP_SCRIPT_PATH)
-                command[i] = part
-                break
-
-        subprocess.run(command, check=True)
+        subprocess.run(command, check=True, shell=True)
         # Wait and hope that formatting has finished by then.
         time.sleep(180)
 
@@ -48,7 +41,7 @@ def start_cloud_process(command, num, debug):
         time.sleep(1)
         print(command)
     else:
-        subprocess.run(command.split(' '), check=True)
+        subprocess.run(command, check=True, shell=True)
 
 
 def start_cloud_finish(num, debug):
@@ -69,7 +62,7 @@ def stop_cloud_instance(num, debug):
         print(command)
         time.sleep(1)
     else:
-        subprocess.run(command.split(' '), check=True)
+        subprocess.run(command, check=True, shell=True)
 
 
 def start_experiment(command, num, debug):
@@ -90,7 +83,7 @@ def start_distributed(command, num, debug):
 
 def start_all_distributed(command, combinations, debug):
     for i, params in enumerate(combinations, 1):
-        start_distributed(command + params, i, debug)
+        start_distributed(command + ' ' + params, i, debug)
     print('All experiments finished.\n'
             'Please check to see if all machines have been shutdown properly.')
 
