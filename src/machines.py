@@ -124,7 +124,7 @@ FINISH_COMMAND = (
     "echo 'Compressing results...' && "
     'export ANAME=\\$(date +%s) && '
     'tar -czf exp-\\$ANAME.tar --remove-files -C .. GANerator_experiments && '
-    'gsutil cp exp-\\$ANAME.tar gs://jan-ml-data/instance-{suffix}/'
+    'gsutil cp exp-\\$ANAME.tar gs://ganerator/ganerator-{suffix}/'
 )
 
 # How to end or delete your instance.
