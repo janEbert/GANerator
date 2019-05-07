@@ -121,6 +121,7 @@ INIT_COMMAND = (
 # You can also interpolate the instance name suffix into the command
 # via the format string indicator `{suffix}`.
 FINISH_COMMAND = (
+    "echo 'Compressing results...' && "
     'export ANAME=\\$(date +%s) && '
     'tar -czf exp-\\$ANAME.tar -C .. GANerator_experiments && '
     'gsutil cp exp-\\$ANAME.tar gs://jan-ml-data/instance-{suffix}/'

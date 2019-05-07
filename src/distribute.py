@@ -26,7 +26,8 @@ def start_cloud_instance(num, debug):
 def start_cloud_init(num, debug):
     if machine.INIT_COMMAND:
         command = machine.REMOTE_PROCESS_COMMAND.format(
-                command=machine.INIT_COMMAND, suffix=num)
+                command=machine.INIT_COMMAND)
+        command = command.format(suffix=num)
         if debug:
             time.sleep(1)
             print(command)
@@ -47,7 +48,8 @@ def start_cloud_process(command, num, debug):
 def start_cloud_finish(num, debug):
     if machine.FINISH_COMMAND:
         command = machine.REMOTE_PROCESS_COMMAND.format(
-                command=machine.FINISH_COMMAND, suffix=num)
+                command=machine.FINISH_COMMAND)
+        command = command.format(suffix=num)
         if debug:
             time.sleep(1)
             print(command)
