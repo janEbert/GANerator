@@ -123,7 +123,7 @@ INIT_COMMAND = (
 FINISH_COMMAND = (
     "echo 'Compressing results...' && "
     'export ANAME=\\$(date +%s) && '
-    'tar -czf exp-\\$ANAME.tar -C .. GANerator_experiments && '
+    'tar -czf exp-\\$ANAME.tar --remove-files -C .. GANerator_experiments && '
     'gsutil cp exp-\\$ANAME.tar gs://jan-ml-data/instance-{suffix}/'
 )
 
