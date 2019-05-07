@@ -9,7 +9,7 @@ import time
 import machine
 
 STARTUP_SCRIPT_PATH = os.path.join(os.path.dirname(__file__),
-        '../GANerator_GCP_startup.sh')
+        'GANerator_GCP_startup.sh')
 
 
 def start_cloud_instance(num, debug):
@@ -77,6 +77,7 @@ def start_experiment(command, num, debug):
     if not debug:
         print('Experiment on machine {}-{} finished'.format(
                 machine.INSTANCE_NAME_PREFIX, num))
+        time.sleep(10)  # wait for the machine to actually be deleted
 
 def start_distributed(command, num, debug):
     start_experiment(command, num, debug)
