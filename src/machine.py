@@ -16,7 +16,7 @@ ZONE = 'europe-west4-c'
 # 'n1-standard-2' or maybe -4
 # or 'n1-highmem-4' or -8.
 MACHINE_TYPE = 'n1-standard-4'
-GPU_TYPE = 'nvidia-tesla-p4'  # -p4, -v100, -p100 or -k80
+GPU_TYPE = 'nvidia-tesla-p4'  # -t4, -p4, -v100, -p100 or -k80
 # 1, 2, 4, 8.
 # Make sure you have enough quota available!
 GPU_COUNT = 1

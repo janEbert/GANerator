@@ -31,9 +31,9 @@ ZONE = ('europe-west4-a', 'europe-west4-b', 'europe-west4-c', 'europe-west4-c',
 # The number at the end is the amount of CPUs.
 # 'n1-standard-2' or maybe -4
 # or 'n1-highmem-4' or -8.
-MACHINE_TYPE = 'n1-standard-4'
-# -p4, -v100, -p100 or -k80
-GPU_TYPE = ('nvidia-tesla-v100',) * 4 + ('nvidia-tesla-p100',) * 4
+MACHINE_TYPE = 'n1-standard-2'
+# -t4, -p4, -v100, -p100 or -k80
+GPU_TYPE = ('nvidia-tesla-p4',) * 4 + ('nvidia-tesla-t4',) * 4
 # 1, 2, 4, 8.
 # Make sure you have enough quota available!
 GPU_COUNT = 1
