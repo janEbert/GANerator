@@ -506,19 +506,7 @@ def main():
 
 
     # Generate example batch
-    tfs_list = [
-        tfs.Resize(img_shape),
-        tfs.ToTensor(),
-        tfs.Normalize((data_mean,) * img_channels, (data_std,) * img_channels)
-    ]
-    if not resize:
-        tfs_list[0] = tfs.CenterCrop(img_shape)
-    transform = tfs.Compose(tfs_list)
-    dataset = dataset_class(dataset_root, transform=transform)
 
-    dataloader = tdata.DataLoader(dataset, batch_size=batch_size, num_workers=num_workers, shuffle=True)
-
-    example_batch = next(iter(dataloader))
     example_noise = torch.randn(batch_size, g_input, 1, 1, device=device)
 
     # Model helper methods
@@ -613,92 +601,7 @@ def main():
             raise ValueError("Unknown normalization `'{}'`".format(norm))
 
 
-    # Define and initialize models
-
-    # Discriminator
-
-    class Discriminator(nn.Module):
-        def __init__(self, normalization, activation, activation_kwargs,
-                     img_channels, img_shape, features, reference_batch=None):
-            super().__init__()
-            self.layers = self.build_layers(normalization, activation, activation_kwargs,
-                                            img_channels, img_shape, features)
-            if normalization is not Norm.VIRTUAL_BATCH:
-                self.reference_batch = None  # we can test for VBN with this invariant
-                self.layers = nn.Sequential(*self.layers)
-            elif reference_batch is None:
-                raise ValueError('Normalization is virtual batch norm, but '
-                        '`reference_batch` is `None` or missing.')
-            else:
-                self.reference_batch = reference_batch  # never `None`
-                self.layers = nn.ModuleList(self.layers)
-
-        @staticmethod
-        def build_layers(norm, activation, activation_kwargs, img_channels, img_shape, features):
-            """
-            Return a list of the layers for the discriminator network.
-
-            Example for a 64 x 64 image:
-            >>> Discriminator.build_layers(Norm.BATCH, nn.LeakyReLU, {'negative_slope': 0.2, 'inplace': True},
-                                           img_channels=3, img_shape=(64, 64), features=64)
-            [
-                # input size is 3 x 64 x 64 (given by `img_channels` and `img_shape`)
-                nn.Conv2d(img_channels, features, 4, 2, 1, bias=False),
-                nn.LeakyReLU(0.2, True),
-                # state size is (features) x 32 x 32
-                nn.Conv2d(features, features * 2, 4, 2, 1, bias=False),
-                nn.BatchNorm2d(features * 2),
-                nn.LeakyReLU(0.2, True),
-                # state size is (features * 2) x 16 x 16
-                nn.Conv2d(features * 2, features * 4, 4, 2, 1, bias=False),
-                nn.BatchNorm2d(features * 4),
-                nn.LeakyReLU(0.2, True),
-                # state size is (features * 4) x 8 x 8
-                nn.Conv2d(features * 4, features * 8, 4, 2, 1, bias=False),
-                nn.BatchNorm2d(features * 8),
-                nn.LeakyReLU(0.2, True),
-                # state size is (features * 8) x 4 x 4
-                nn.Conv2d(features * 8, 1, 4, 1, 0, bias=False),
-                nn.Sigmoid()
-                # output size is 1 (scalar value)
-            ]
-            """
-            # input size is (img_channels) x (img_shape[0]) x (img_shape[1])
-            layers = [
-                nn.Conv2d(img_channels, features, 4, 2, 1, bias=False),
-                activation(**activation_kwargs)
-            ]
-            # state size is (features) x (img_shape[0] / 2) x (img_shape[1] / 2)
-            # each further layer doubles feature size and halves image size
-            for i, j in powers(int(np.log2(img_shape[0])) - 3):
-                layers.extend((
-                    *layer_with_norm(nn.Conv2d(features * i, features * j, 4, 2, 1, bias=False),
-                                     norm, features * j),
-                    activation(**activation_kwargs)
-                ))
-            # state size is (features * 2^n) x 4 x 4
-            layers.extend((
-                nn.Conv2d(features * j, 1, 4, 1, 0, bias=False),
-                nn.Sigmoid()
-            ))
-            # output size is 1 (scalar value)
-            return layers
-
-        @weak_script_method
-        def forward(self, input):
-            # Separation is for performance reasons
-            if self.reference_batch is None:
-                return self.layers(input)
-            else:
-                # VBN
-                ref_batch = self.reference_batch
-                for layer in self.layers:
-                    if not isinstance(layer, VirtualBatchNorm2d):
-                        input     = layer(input)
-                        ref_batch = layer(ref_batch)
-                    else:
-                        input, ref_batch = layer(input, ref_batch)
-                return input
+    # Define and initialize generator
 
 
     # Generator
@@ -801,9 +704,6 @@ def main():
             nn.init.constant_(module.bias.data, 0)
 
 
-    d_net = Discriminator(d_params['normalization'], d_params['activation'], d_params['activation_kwargs'],
-                          img_channels, img_shape, d_params['features'],
-                          example_batch[0].to(device, float_dtype)).to(device, float_dtype)
     g_net = Generator(g_params['normalization'], g_params['activation'], g_params['activation_kwargs'],
                       img_channels, img_shape, g_params['features'], g_input,
                       example_noise.to(device, float_dtype)).to(device, float_dtype)
@@ -811,15 +711,12 @@ def main():
     # Load models' checkpoints
 
     if models_cp is not None:
-        d_net.load_state_dict(models_cp['d_net_state_dict'])
         g_net.load_state_dict(models_cp['g_net_state_dict'])
 
     if multiple_gpus:
-        d_net = nn.DataParallel(d_net, list(range(num_gpus)))
         g_net = nn.DataParallel(g_net, list(range(num_gpus)))
 
     if models_cp is None:
-        d_net.apply(init_weights)
         g_net.apply(init_weights)
 
 
@@ -831,17 +728,13 @@ def main():
     if models_cp is not None:
         if not load_weights_only:
             try:
-                d_optim_state_dict = models_cp['d_optim_state_dict']
                 g_optim_state_dict = models_cp['g_optim_state_dict']
             except KeyError:
                 print("One of the optimizers' state dicts was not found; probably because "
                       "only the models' weights were saved. Set `load_weights_only` to `True`.")
-            d_optimizer.load_state_dict(d_optim_state_dict)
             g_optimizer.load_state_dict(g_optim_state_dict)
-            d_net.train()
             g_net.train()
         else:
-            d_net.eval()
             g_net.eval()
 
 
