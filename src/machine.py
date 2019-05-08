@@ -48,7 +48,7 @@ START_COMMAND = (
         '--accelerator="type={gpu_type},count={gpu_count}" '
         '--metadata="install-nvidia-driver=True" '
         '--metadata-from-file startup-script="GANERATOR_STARTUP" '
-        '--create-disk="size=5GB,auto-delete=yes" '
+        '--create-disk="size=11GB,auto-delete=yes" '
         '--disk="name={ro_disk_name},mode=ro" '
         '--service-account={service_account} '
         '--scopes=storage-full '

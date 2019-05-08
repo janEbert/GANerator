@@ -42,7 +42,10 @@ def start_cloud_process(command, num, debug):
         time.sleep(1)
         print(command)
     else:
-        subprocess.run(command, check=True, shell=True)
+        try:
+            subprocess.run(command, check=True, shell=True)
+        except KeyboardInterrupt:
+            pass
 
 
 def start_cloud_finish(num, debug):

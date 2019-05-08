@@ -140,7 +140,10 @@ def start_cloud_process(command, num, debug):
         time.sleep(1)
         print(remote_process_command)
     else:
-        subprocess.run(remote_process_command, check=True, shell=True)
+        try:
+            subprocess.run(remote_process_command, check=True, shell=True)
+        except KeyboardInterrupt:
+            pass
 
 
 def start_cloud_finish(num, debug):
