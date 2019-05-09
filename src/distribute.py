@@ -93,7 +93,7 @@ def start_experiment(command, num, debug):
     if not debug:
         print('Experiment on machine {}-{} finished'.format(
                 machine.INSTANCE_NAME_PREFIX, num))
-        time.sleep(10)  # wait for the machine to actually be deleted
+        time.sleep(30)  # wait for the machine to actually be deleted
 
 def start_distributed(command, num, debug):
     start_experiment(command, num, debug)
