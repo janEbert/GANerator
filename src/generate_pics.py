@@ -751,8 +751,10 @@ def main():
     # Save images generated on noise.
     zfill_len = len(str(num_imgs))
 
-    for i in range(0, num_imgs, batch_size):
+    num_full_gens = num_imgs // batch_size
+    for i in map(lambda x: x * batch_size, range(num_full_gens)):
         generate_fakes(batch_size, i, g_input, g_net, device, float_dtype, zfill_len, save_dir)
+    generate_fakes(num_imgs - num_full_gens * batch_size, num_full_gens * batch_size, g_input, g_net, device, float_dtype, zfill_len, save_dir)
 
 
 if __name__ == '__main__':
