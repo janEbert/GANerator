@@ -44,14 +44,29 @@ test_params = {
     'dataset_root': ('/mnt/disks/ganerator-disk/ffhq',),
     'img_shape': (64, 128),
     'normalization': self_cross_product(('b', 's', 'n', 'v', 'i', 'a')),
+    # For FFHQ, use more epochs
+    'epochs': (15,),
+    'checkpoint_period': (300,),
+
+    # With GAN hacks
+    'g_flip_labels': (True,),
+    'd_noisy_labels_prob': (0.1,),
+    'smooth_labels': (True,),
+    'optimizer': ("\\(\\'optim.SGD\\',\\'optim.Adam\\'\\)",),
+    'optim_param': ('\\(0,\\(0.5,0.999\\)\\)',),
+    'activation': ('nn.LeakyReLU',),
+    'activation_kwargs': ("\\{\\'negative_slope\\':0.2,\\'inplace\\':True\\}",),
 }
 
 
-def process_command(command):
-    return command.translate(str.maketrans('','','[](),\'"'))
+def process_command(command, manual_escaping):
+    if manual_escaping:
+        return command
+    else:
+        return command.translate(str.maketrans('','','[](),\'"'))
 
 
-def dict_combinations(dict_):
+def dict_combinations(dict_, manual_escaping):
     dict_keys = list(dict_)
     combinations = itertools.product(*[range(len(v)) for v in dict_.values()])
     results = []
@@ -60,7 +75,7 @@ def dict_combinations(dict_):
         command = ''
         for key, val_ix in zip(dict_, comb):
             command = ' '.join((command, '--' + key, str(dict_[key][val_ix])))
-        results.append(process_command(command[1:]))
+        results.append(process_command(command[1:], manual_escaping))
     return results
 
 
@@ -70,6 +85,8 @@ def parse_args():
             help='Only echo the commands to execute.')
     parser.add_argument('--py_bin', type=str, default='python3',
             help='Python 3 binary. Check in your cloud instance.')
+    parser.add_argument('--manual_escaping', action='store_true',
+            help='Escape characters manually. Nothing wil be removed.')
     parser.add_argument('--no_gen', action='store_true',
             help='Do not generate the source code again.')
     return parser.parse_args()
@@ -81,7 +98,8 @@ def generate_src(py_bin):
             check=True)
 
 
-def start_experiments(debug=False, py_bin='python3', no_gen=False):
+def start_experiments(debug=False, py_bin='python3', manual_escaping=False,
+        no_gen=False):
     try:
         subprocess.check_output([py_bin, '--version'])
     except FileNotFoundError:
@@ -99,7 +117,7 @@ def start_experiments(debug=False, py_bin='python3', no_gen=False):
     # is going to have unix paths or not
     src_file = os.path.dirname(__file__) + '/' + SRC_PATH
     cmd = [py_bin, src_file]
-    combinations = dict_combinations(test_params)
+    combinations = dict_combinations(test_params, manual_escaping)
     distributed.run_all_distributed(' '.join(cmd), combinations, debug)
     print('Done!')
 

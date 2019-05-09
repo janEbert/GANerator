@@ -48,9 +48,10 @@ test_params = {
     'g_flip_labels': (True,),
     'd_noisy_labels_prob': (0.1,),
     'smooth_labels': (True,),
-    'optimizer': ("('optim.SGD','optim.Adam')",),
-    'optim_param': ('(0,(0.5,0.999))',),
+    'optimizer': ("\\(\\'optim.SGD\\',\\'optim.Adam\\'\\)",),
+    'optim_param': ('\\(0,\\(0.5,0.999\\)\\)',),
     'activation': ('nn.LeakyReLU',),
+    'activation_kwargs': ("\\{\\'negative_slope\\':0.2,\\'inplace\\':True\\}",),
 }
 
 
