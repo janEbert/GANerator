@@ -18,13 +18,19 @@ def start_cloud_instance(num, debug):
     if debug:
         print(command)
     else:
-        try:
-            subprocess.run(command, check=True, shell=True)
-            # Wait and hope that formatting has finished by then.
-            time.sleep(180)
-        except KeyboardInterrupt:
-            stop_cloud_instance(num, debug)
-            raise
+        while True:
+            try:
+                subprocess.run(command, check=True, shell=True)
+                # Wait and hope that formatting has finished by then.
+                time.sleep(180)
+            except subprocess.CalledProcessError:
+                time.sleep(30)
+                continue
+            except KeyboardInterrupt:
+                stop_cloud_instance(num, debug)
+                raise
+            else:
+                break
 
 
 def start_cloud_init(num, debug):
@@ -36,11 +42,17 @@ def start_cloud_init(num, debug):
             time.sleep(1)
             print(command)
         else:
-            try:
-                subprocess.run(command, check=True, shell=True)
-            except KeyboardInterrupt:
-                stop_cloud_instance(num, debug)
-                raise
+            while True:
+                try:
+                    subprocess.run(command, check=True, shell=True)
+                except subprocess.CalledProcessError:
+                    time.sleep(30)
+                    continue
+                except KeyboardInterrupt:
+                    stop_cloud_instance(num, debug)
+                    raise
+                else:
+                    break
 
 
 def start_cloud_process(command, num, debug):
