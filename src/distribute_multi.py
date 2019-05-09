@@ -141,9 +141,10 @@ def start_cloud_process(command, num, debug):
 
     remote_process_command = remote_process_command.format(
             instance_name_prefix=instance_name_prefix, suffix=num)
-    command = remote_process_command.replace('GANERATOR_CLOUD_BIN',
-            '"' + cloud_api_path + '"')
-    command = command.replace('GANERATOR_COMMAND', command)
+    remote_process_command = remote_process_command.replace(
+            'GANERATOR_CLOUD_BIN', '"' + cloud_api_path + '"')
+    remote_process_command = remote_process_command.replace(
+            'GANERATOR_COMMAND', command)
     if debug:
         time.sleep(1)
         print(remote_process_command)
@@ -184,7 +185,7 @@ def stop_cloud_instance(num, debug):
     cloud_api_path = MACHINE_VARS['cloud_api_path'][num]
     command = MACHINE_VARS['end_command'][num].format(
             instance_name_prefix=instance_name_prefix, suffix=num)
-    command = remote_process_command.replace('GANERATOR_CLOUD_BIN',
+    command = command.replace('GANERATOR_CLOUD_BIN',
             '"' + cloud_api_path + '"')
     if debug:
         time.sleep(1)
