@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
-genpypath='../src/generate_pics.py'
-fidscorepath='../../pytorch-fid/fid_score.py'
-npzpath='./ffhq.npz'
+genpypath='/mnt/disks/rwdisk/GANerator/src/generate_pics.py'
+fidscorepath='/mnt/disks/rwdisk/pytorch-fid/fid_score.py'
+npzpath='/mnt/disks/rwdisk/ffhq.npz'
 
 mkdir pics
 
@@ -17,7 +17,10 @@ for file in $(ls); do
     tar -xzf $file $paramsintar
     python $genpypath --models_file $latestintar --params_file $paramsintar --save_dir pics
     python $fidscorepath $npzpath pics -c 0 --name $file.txt
+    gsutil cp $file.txt gs://ganerator/results/
     rm pics/*
     rm GANerator_experiments/*
 done
+
+rmdir pics
 
