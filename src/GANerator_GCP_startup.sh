@@ -6,7 +6,7 @@
 # (5G by default).
 # RO_DISK_SIZE is the disk size for the read-only disk which contains
 # the dataset.
-export DISK_SIZE="13G"
+export DISK_SIZE="14G"
 export RO_DISK_SIZE="20G"
 
 export MNT_BASE_DIR="/mnt/disks"

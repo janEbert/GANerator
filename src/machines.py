@@ -31,7 +31,7 @@ ZONE = ('europe-west4-a', 'europe-west4-b', 'europe-west4-c', 'europe-west4-c',
 # The number at the end is the amount of CPUs.
 # 'n1-standard-2' or maybe -4
 # or 'n1-highmem-4' or -8.
-MACHINE_TYPE = 'n1-standard-2'
+MACHINE_TYPE = 'n1-standard-4'
 # -t4, -p4, -v100, -p100 or -k80
 GPU_TYPE = ('nvidia-tesla-p4',) * 4 + ('nvidia-tesla-t4',) * 4
 # 1, 2, 4, 8.
@@ -75,7 +75,7 @@ START_COMMAND = (
         '--accelerator="type={gpu_type},count={gpu_count}" '
         '--metadata="install-nvidia-driver=True" '
         '--metadata-from-file startup-script="GANERATOR_STARTUP" '
-        '--create-disk="size=13GB,auto-delete=yes" '
+        '--create-disk="size=14GB,auto-delete=yes" '
         '--disk="name={ro_disk_name},mode=ro" '
         '--service-account={service_account} '
         '--scopes=storage-full '
@@ -123,7 +123,7 @@ INIT_COMMAND = (
 FINISH_COMMAND = (
     "echo 'Compressing results...' && "
     'export ANAME=\\$(date +%s) && '
-    'tar -czf exp-\\$ANAME.tar.gz --remove-files -C .. GANerator_experiments && '
+    'tar -czvf exp-\\$ANAME.tar.gz --remove-files -C .. GANerator_experiments && '
     'gsutil cp exp-\\$ANAME.tar.gz gs://ganerator/ganerator-{suffix}/'
 )
 

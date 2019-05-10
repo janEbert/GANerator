@@ -48,7 +48,7 @@ START_COMMAND = (
         '--accelerator="type={gpu_type},count={gpu_count}" '
         '--metadata="install-nvidia-driver=True" '
         '--metadata-from-file startup-script="GANERATOR_STARTUP" '
-        '--create-disk="size=13GB,auto-delete=yes" '
+        '--create-disk="size=14GB,auto-delete=yes" '
         '--disk="name={ro_disk_name},mode=ro" '
         '--service-account={service_account} '
         '--scopes=storage-full '
@@ -98,8 +98,8 @@ INIT_COMMAND = (
 FINISH_COMMAND = (
     "echo 'Compressing results...' && "
     'export ANAME=\\$(date +%s) && '
-    'tar -czf exp-\\$ANAME.tar.gz --remove-files -C .. GANerator_experiments && '
-    'gsutil cp exp-\\$ANAME.tar.gz gs://ganerator/ganerator-{suffix}/'
+    'tar -czvf exp-\\$ANAME.tar.gz --remove-files -C .. GANerator_experiments && '
+    'gsutil cp exp-\\$ANAME.tar.gz gs://jan-ml-data/ganerator-{suffix}/'
 )
 
 # How to end or delete your instance.
