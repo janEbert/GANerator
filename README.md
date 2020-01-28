@@ -22,6 +22,13 @@ Jupyter Notebook. A pure Python version can be generated from the notebook
 where parameters are supplied through command line arguments making automated
 experiments much easier.
 
+This framework resulted in an analysis on combinations of normalization
+functions for GANs. In one day, 72 GANs in total were trained on 36 combinations
+of normalization functions (a small and a large GAN for each combination) and
+the [Fréchet Inception Distance](https://arxiv.org/abs/1706.08500) of their
+generations was compared. The report is available
+[here](gan-normalization-comparison.pdf).
+
 ## Current Features
 
 Only late versions of Python 3 are supported.
